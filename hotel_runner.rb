@@ -3,6 +3,7 @@ require_relative 'hotel'
 require_relative 'guest'
 require_relative 'room'
 require_relative 'rates'
+require_relative 'reservation'
 
 # TODO: create single hotel
 hotel_1 = Hotel.new 'Hotel El Codino'
@@ -50,19 +51,86 @@ hotel_1.add_guest(Guest.new(name: "Bob Jones", type: "business", link: "none"))
 hotel_1.add_guest(Guest.new(name: "Lady Sue Perkins", type: "personal", link: "none"))
 hotel_1.add_guest(Guest.new(name: "Mr F Sinatra", type: "personal", link: "Mrs G Sinatra"))
 hotel_1.add_guest(Guest.new(name: "Mrs G Sinatra", type: "personal", link: "Mr F Sinatra"))
-hotel_1.add_guest(Guest.new(name: "Chewbaca", type: "business", link: "Hans Solo"))
-hotel_1.add_guest(Guest.new(name: "Hans Solo", type: "business", link: "Chewbaca"))
+hotel_1.add_guest(Guest.new(name: "Chewbacca", type: "business", link: "Hans Solo"))
+hotel_1.add_guest(Guest.new(name: "Hans Solo", type: "business", link: "Chewbacca"))
 hotel_1.add_guest(Guest.new(name: "Freddy Krueger", type: "personal", link: "none"))
 hotel_1.add_guest(Guest.new(name: "Michael Myers", type: "business", link: "none"))
 hotel_1.add_guest(Guest.new(name: "Gareth Gates", type: "personal", link: "none"))
-hotel_1.add_guest(Guest.new(name: "Will Smith", type: "personal", link: "none"))
-hotel_1.add_guest(Guest.new(name: "Lucille Ball", type: "personal", link: "none"))
+hotel_1.add_guest(Guest.new(name: "Will Young", type: "personal", link: "none"))
+hotel_1.add_guest(Guest.new(name: "Darius Danesh", type: "personal", link: "none"))
 
 # TODO: create the rates per room type
 hotel_1.room_rate(Rates.new(name: "Rate1", type: "single", rate: 100, category: "personal"))
 hotel_1.room_rate(Rates.new(name: "Rate2", type: "double", rate: 200, category: "personal"))
-hotel_1.room_rate(Rates.new(name: "Rate3", type: "single", rate: 200, category: "business"))
-hotel_1.room_rate(Rates.new(name: "Rate4", type: "double", rate: 400, category: "business"))
-hotel_1.room_rate(Rates.new(name: "Rate4", type: "corporate", rate: 500, category: "business"))
+hotel_1.room_rate(Rates.new(name: "Rate3", type: "single", rate: 150, category: "business"))
+hotel_1.room_rate(Rates.new(name: "Rate4", type: "double", rate: 300, category: "business"))
+hotel_1.room_rate(Rates.new(name: "Rate5", type: "corporate", rate: 500, category: "business"))
+
+# print a summary report on the hotel
+puts "--------------------\n" + "|*|summary report|*| ".upcase + "\n--------------------\n\n"
+puts "The #{hotel_1.name} currently has #{hotel_1.guests.size} guest accounts and #{hotel_1.rooms.size} rooms available.\n\n"
+puts "Total rooms: #{hotel_1.rooms.size}"
+puts "Rate options: #{hotel_1.rates.size}"
+
+# print a report on the guests in the hotel
+puts hotel_1.list_guests
+puts "\n"
+
+# print a report on the rooms in the hotel
+puts hotel_1.list_rooms
+puts "\n"
+
+# print a report on the rates in the hotel
+puts hotel_1.list_rates
+puts "\n"
+
+# reserve a room
+hotel_1.reserve_room("Bob Jones", 1)
+hotel_1.reserve_room("Lady Sue Perkins", 3)
+hotel_1.reserve_room("Mr F Sinatra", 2)
+hotel_1.reserve_room("Hans Solo", 4)
+hotel_1.reserve_room("Freddy Krueger", 11)
+
+puts "Oh look, it appears we have had some reservations today, lucky ducks us! Management would like to know this, so here is a new list of our guests and the rooms they have reserved:\n\n#{hotel_1.list_guests}"
+
+# report the rooms that have been reserved
+puts "--------------------\n" + "|*|reserved rooms|*| ".upcase + "\n--------------------\n\n"
+puts "A report on all the rooms that have been reserved:\n\n"
+hotel_1.list_reserved_rooms
+
+# time for them to check out
+guest1 = hotel_1.get_guest("Bob Jones")
+guest1.check_out(1, hotel_1)
+guest2 = hotel_1.get_guest("Freddy Krueger")
+guest2.check_out(11, hotel_1)
+puts "\nLooks like we have had some guest checkouts, management will be wanting a report on that too:\n\n#{hotel_1.list_rooms}"
+puts "\nAnd what about our hotel guests and account holders?  Here is a new list of them and any rooms they have reserved:\n\n#{hotel_1.list_guests}"
+
+## New guest to reserve a room.
+puts "\nOh look, here is somebody just come in, I wonder if they would like to become a guest at #{hotel_1.name}  Lets ask them."
+
+print "\nHello, welcome to #{hotel_1.name}, would you like to open a guest account with us? yes or no.\n"
+
+become_guest_answer = gets.chomp
+puts hotel_1.become_guest(become_guest_answer)
+guest_name = gets.chomp
+guest_add_1 = hotel_1.add_guest(Guest.new(name:guest_name))
+
+puts "\nI am very pleased to meet you #{guest_name}, would you like to reserve a room? yes or no."
+
+room_booking1_answer = gets.chomp
+puts hotel_1.room_booking1(room_booking1_answer)
+
+if room_booking1_answer == "yes"
+  puts "\nThat's excellent news, we have plenty of rooms available for single, double and corporate bookings.  Here is a list of rooms available, what type would you like?\n\n #{hotel_1.list_rooms}\n\n"
+  room_to_reserve = gets.chomp.to_i
+  hotel_1.reserve_room(guest_name, room_to_reserve)
+  puts "\nNow that #{guest_name} has reserved themselves a room, lets check which rooms are currently reserved in the #{hotel_1.name}:\n\n"
+  hotel_1.list_reserved_rooms
+  puts "\nAnd what about our hotel guests and account holders?  Here is a new list of them and any rooms they have reserved:\n\n#{hotel_1.list_guests}"
+
+  else
+    puts "That's all folks!"
+end
 
 binding.pry;''
